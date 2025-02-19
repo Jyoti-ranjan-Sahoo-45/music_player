@@ -85,6 +85,10 @@ Modify the color scheme in `styles.css`:
 - **UI Design**: Custom implementation
 - **API Provider**: [Spotify Developer](https://developer.spotify.com)
 
+## live view
+https://music-player-five-blue.vercel.app/
+
+
 ## License 📄
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 ```
@@ -105,5 +109,3 @@ To complete the setup:
 3. Create a LICENSE file
 4. Update the credits section with your actual profile links
 
-## live view
-https://music-player-five-blue.vercel.app/
