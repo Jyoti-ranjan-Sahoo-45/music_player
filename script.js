@@ -1,231 +1,116 @@
-// DOM Elements
-const searchBtn = document.getElementById('searchBtn');
-const searchInput = document.getElementById('searchInput');
-const resultsDiv = document.getElementById('results');
-const categoryButtons = document.querySelectorAll('.category');
-const audioElement = document.getElementById('audioElement');
-const audioPlayer = document.getElementById('audioPlayer');
-const nowPlaying = document.getElementById('nowPlaying');
+// Spotify API credentials
+const clientId = 'a984077fdcb74daa92e1037a3491f8f5';
+const clientSecret = '691f40f6f63c4bdab9c5c986d636296f';
+let accessToken = '';
 
-// State Management
-let currentData = {};
-
-// Search Functionality
-async function fetchResults(query) {
-  const types = 'track,album,artist,playlist';
-  const url = `https://v1.nocodeapi.com/jyoti45r/spotify/IQowSpHwmUlrrIBO/search?q=${encodeURIComponent(query)}&type=${types}`;
-
-  try {
-    const response = await fetch(url);
-    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-    const data = await response.json();
-    currentData = data;
-    displayResults('tracks'); // Default to tracks view
-  } catch (error) {
-    console.error("Error fetching data:", error);
-    resultsDiv.innerHTML = `
-      <div class="section">
-        <h2 class="section-title">Error</h2>
-        <p>Sorry, we couldn't fetch the data. Please try again later.</p>
-      </div>
-    `;
-  }
-}
-
-// Display Results
-function displayResults(selectedCategory) {
-  resultsDiv.innerHTML = "";
-
-  if (!currentData || !currentData[selectedCategory]?.items) {
-    resultsDiv.innerHTML = `
-      <div class="section">
-        <h2 class="section-title">No Results</h2>
-        <p>No results found for your search.</p>
-      </div>
-    `;
-    return;
-  }
-
-  const items = currentData[selectedCategory].items;
-  createResultSection(selectedCategory, items);
-}
-
-// Create Result Section
-function createResultSection(category, items) {
-  const section = document.createElement("div");
-  section.className = "section";
-
-  const header = document.createElement("h2");
-  header.className = "section-title";
-  header.textContent = `${category.charAt(0).toUpperCase() + category.slice(1)}`;
-  section.appendChild(header);
-
-  const grid = document.createElement("div");
-  grid.className = "music-grid";
-
-  items.forEach((item) => {
-    const card = document.createElement("div");
-    card.className = "music-card";
-
-    let title = item.name;
-    let artist = category === 'tracks' ? item.artists[0].name : '';
-    let imageUrl = item.images?.[0]?.url || (item.album?.images?.[0]?.url);
-
-    if (imageUrl) {
-      const img = document.createElement("img");
-      img.src = imageUrl;
-      img.alt = title;
-      card.appendChild(img);
+// Get access token
+function getToken() {
+  const authHeader = 'Basic ' + btoa(clientId + ':' + clientSecret);
+  fetch('https://accounts.spotify.com/api/token', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+      'Authorization': authHeader
+    },
+    body: 'grant_type=client_credentials'
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.access_token) {
+      accessToken = data.access_token;
+      document.getElementById('tokenStatus').textContent = 'Connected';
+      document.getElementById('searchSection').style.display = 'flex';
+      getTopTracks();
     }
-
-    const content = document.createElement("div");
-    content.className = "music-card-content";
-
-    const titleElem = document.createElement("div");
-    titleElem.className = "music-card-title";
-    titleElem.textContent = title;
-    content.appendChild(titleElem);
-
-    if (artist) {
-      const artistElem = document.createElement("div");
-      artistElem.className = "music-card-artist";
-      artistElem.textContent = artist;
-      content.appendChild(artistElem);
-    }
-
-    card.appendChild(content);
-
-    if (category === 'tracks' && item.preview_url) {
-      card.addEventListener('click', () => playTrack(item));
-    }
-
-    grid.appendChild(card);
+  })
+  .catch(error => {
+    document.getElementById('tokenStatus').textContent = 'Connection failed';
   });
-
-  section.appendChild(grid);
-  resultsDiv.appendChild(section);
 }
 
-// Audio Player Functionality
-function playTrack(track) {
-  if (track.preview_url) {
-    audioElement.src = track.preview_url;
-    audioPlayer.classList.add('active');
-    nowPlaying.textContent = `${track.name} - ${track.artists[0].name}`;
-    audioElement.play();
-  } else {
-    alert('Preview not available for this track');
-  }
-}
-
-// Top Songs Functionality
-async function fetchAndDisplayTopSongs(query, title) {
-  const types = 'track';
-  const url = `https://v1.nocodeapi.com/jyoti45r/spotify/IQowSpHwmUlrrIBO/search?q=${encodeURIComponent(query)}&type=${types}`;
-
-  try {
-    const response = await fetch(url);
-    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-    const data = await response.json();
-    const items = data.tracks?.items ? data.tracks.items.slice(0, 10) : [];
-    createTopSongsSection(title, items);
-  } catch (error) {
-    console.error("Error fetching top songs:", error);
-    const topSongsDiv = document.getElementById("topSongs");
-    topSongsDiv.innerHTML += `
-      <div class="section">
-        <h2 class="section-title">Error</h2>
-        <p>Error loading ${title}</p>
-      </div>
-    `;
-  }
-}
-
-// Create Top Songs Section
-function createTopSongsSection(title, items) {
-  const topSongsDiv = document.getElementById("topSongs");
-  const section = document.createElement("div");
-  section.className = "section";
-
-  const header = document.createElement("h2");
-  header.className = "section-title";
-  header.textContent = title;
-  section.appendChild(header);
-
-  const grid = document.createElement("div");
-  grid.className = "music-grid";
-
-  items.forEach(item => {
-    const card = document.createElement("div");
-    card.className = "music-card";
-
-    let imageUrl = item.album?.images?.[0]?.url;
+// Get top tracks
+function getTopTracks() {
+  fetch('https://api.spotify.com/v1/search?q=year:2024&type=track&limit=10&sort=popularity', {
+    headers: {'Authorization': 'Bearer ' + accessToken}
+  })
+  .then(response => response.json())
+  .then(data => {
+    const topTracksDiv = document.getElementById('topTracks');
+    topTracksDiv.innerHTML = '';
     
-    if (imageUrl) {
-      const img = document.createElement("img");
-      img.src = imageUrl;
-      img.alt = item.name;
-      card.appendChild(img);
-    }
-
-    const content = document.createElement("div");
-    content.className = "music-card-content";
-
-    const titleElem = document.createElement("div");
-    titleElem.className = "music-card-title";
-    titleElem.textContent = item.name;
-    content.appendChild(titleElem);
-
-    const artistElem = document.createElement("div");
-    artistElem.className = "music-card-artist";
-    artistElem.textContent = item.artists[0].name;
-    content.appendChild(artistElem);
-
-    card.appendChild(content);
-
-    if (item.preview_url) {
-      card.addEventListener('click', () => playTrack(item));
-    }
-
-    grid.appendChild(card);
-  });
-
-  section.appendChild(grid);
-  topSongsDiv.appendChild(section);
-}
-
-// Initialize Top Songs
-function loadTopSongs() {
-  const topCategories = [
-    { query: "Top 10 Hindi Songs", title: "Top Hindi Songs" },
-    { query: "Top 10 Odia Songs", title: "Top Odia Songs" },
-    { query: "Top 10 International Songs", title: "Top International Songs" }
-  ];
-  topCategories.forEach(cat => {
-    fetchAndDisplayTopSongs(cat.query, cat.title);
+    data.tracks.items.sort((a, b) => b.popularity - a.popularity)
+      .forEach(track => {
+        topTracksDiv.appendChild(createTrackElement(track, true));
+      });
   });
 }
 
-// Event Listeners
-searchBtn.addEventListener("click", () => {
-  const query = searchInput.value.trim();
-  if (query) fetchResults(query);
-});
+// Search tracks
+function searchTracks(query) {
+  fetch('https://api.spotify.com/v1/search?q=' + encodeURIComponent(query) + '&type=track&limit=10', {
+    headers: {'Authorization': 'Bearer ' + accessToken}
+  })
+  .then(response => response.json())
+  .then(data => displayResults(data));
+}
 
-searchInput.addEventListener("keypress", (e) => {
-  if (e.key === "Enter") searchBtn.click();
-});
+// Create track element
+function createTrackElement(track, isTopTrack = false) {
+  const trackDiv = document.createElement('div');
+  trackDiv.className = 'track-item';
+  trackDiv.innerHTML = `
+    <img src="${track.album.images[0].url}" 
+         alt="${track.album.name}" 
+         class="album-art">
+    <div class="track-info">
+      <strong>${track.name}</strong>
+      <p>${track.artists.map(a => a.name).join(', ')}</p>
+      ${isTopTrack ? `<small>Popularity: ${track.popularity}</small>` : ''}
+    </div>
+  `;
+  trackDiv.addEventListener('click', () => playTrack(track.id, track));
+  return trackDiv;
+}
 
-categoryButtons.forEach((btn) => {
-  btn.addEventListener("click", () => {
-    categoryButtons.forEach((b) => b.classList.remove("active"));
-    btn.classList.add("active");
-    const categoryType = btn.getAttribute("data-type");
-    displayResults(categoryType);
+// Display results
+function displayResults(data) {
+  const resultsDiv = document.getElementById('results');
+  resultsDiv.innerHTML = '';
+  data.tracks.items.forEach(track => {
+    resultsDiv.appendChild(createTrackElement(track));
   });
+}
+
+// Play track
+function playTrack(trackId, trackData) {
+  const nowPlayingDiv = document.getElementById('nowPlaying');
+  nowPlayingDiv.innerHTML = `
+    <div class="now-playing">
+      <img src="${trackData.album.images[0].url}" 
+           class="now-playing-art" 
+           alt="Now playing">
+      <div>
+        <h3>${trackData.name}</h3>
+        <p>${trackData.artists.map(a => a.name).join(', ')}</p>
+      </div>
+      <iframe src="https://open.spotify.com/embed/track/${trackId}" 
+              class="player-iframe"
+              allowtransparency="true" 
+              allow="encrypted-media">
+      </iframe>
+    </div>
+  `;
+}
+
+// Event listeners
+document.getElementById('getTokenBtn').addEventListener('click', getToken);
+
+document.getElementById('searchBtn').addEventListener('click', () => {
+  const query = document.getElementById('searchInput').value;
+  if (query) searchTracks(query);
 });
 
-// Initialize the application
-window.addEventListener("DOMContentLoaded", () => {
-  loadTopSongs();
+// Enter key for search
+document.getElementById('searchInput').addEventListener('keypress', (e) => {
+  if (e.key === 'Enter') document.getElementById('searchBtn').click();
 });
