@@ -1,228 +1,256 @@
-/* Root Variables */
 :root {
-    --primary-color: #1db954;
-    --secondary-color: #191414;
-    --text-color: #333;
-    --bg-color: #f8f9fa;
-    --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  }
+  /* Primary Colors */
+  --primary-color: #00C1D4;       /* Vibrant Aqua */
+  --primary-hover: #00D9EC;       /* Bright Aqua */
+  --primary-active: #00A3B3;      /* Darker Aqua */
   
-  /* Base Reset */
-  * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-  }
+  /* Background Colors */
+  --bg-color: #E0F7FA;            /* Soft Aqua Background */
+  --card-bg: #FFFFFF;             /* Pure White Cards */
+  --card-hover: #B2EBF2;          /* Light Aqua Hover */
   
-  body {
-    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
-    background: var(--bg-color);
-    color: var(--text-color);
-    line-height: 1.6;
-  }
+  /* Accent Colors */
+  --accent-color: #FF6F61;        /* Coral Accent */
+  --secondary-accent: #6A1B9A;     /* Deep Purple Accent */
   
-  /* Header Styles */
-  .header {
-    background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
-    color: white;
-    padding: 2rem 1rem;
+  /* Text Colors */
+  --text-color: #212121;          /* Dark Gray Text */
+  --text-secondary: #757575;       /* Medium Gray */
+  --text-tertiary: #BDBDBD;        /* Light Gray */
+  
+  /* State Colors */
+  --error-color: #E53935;          /* Bright Red */
+  --success-color: #43A047;        /* Forest Green */
+  --warning-color: #FFB300;        /* Amber Yellow */
+  
+  /* UI Elements */
+  --border-color: #E0E0E0;         /* Light Gray Border */
+  --shadow-color: rgba(33,33,33,0.2); /* Subtle Gray Shadow */
+  --overlay-color: rgba(0,193,212,0.1); /* Aqua Overlay */
+
+  /* Spacing and Sizing */
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  
+  /* Effects */
+  --border-radius: 12px;           /* Rounded corners */
+  --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  background: var(--bg-color);
+  color: var(--text-color);
+  line-height: 1.6;
+  min-height: 100vh;
+  padding: var(--spacing-lg);
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--spacing-lg);
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: var(--border-radius);
+  box-shadow: 0 8px 32px var(--shadow-color);
+}
+
+h1, h2 {
+  text-align: center;
+  margin-bottom: var(--spacing-lg);
+  background: linear-gradient(45deg, var(--primary-color), #4CAF50);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+#tokenSection,
+#searchSection {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-lg);
+  padding: var(--spacing-md);
+  background: var(--card-bg);
+  border-radius: var(--border-radius);
+}
+
+input[type="text"] {
+  width: 100%;
+  max-width: 500px;
+  padding: 12px;
+  font-size: 1rem;
+  color: var(--text-color);
+  background: rgba(255, 255, 255, 0.1);
+  border: 2px solid var(--border-color);
+  border-radius: var(--border-radius);
+  transition: var(--transition);
+}
+
+button {
+  padding: 12px 24px;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-color);
+  background: var(--primary-color);
+  border: none;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+button:hover {
+  background: var(--primary-hover);
+  transform: translateY(-2px);
+}
+
+.tracks-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-lg);
+}
+
+.track-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--spacing-md);
+  background: var(--card-bg);
+  border-radius: var(--border-radius);
+  transition: var(--transition);
+  cursor: pointer;
+}
+
+.track-item:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 16px var(--shadow-color);
+}
+
+.album-art {
+  width: 100%;
+  height: auto;
+  border-radius: var(--border-radius);
+  margin-bottom: var(--spacing-sm);
+}
+
+.track-info {
+  text-align: center;
+}
+
+.track-info strong {
+  display: block;
+  font-size: 1.1rem;
+  margin-bottom: var(--spacing-sm);
+}
+
+.track-info p {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+.now-playing {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 1.5rem;
+  align-items: center;
+  padding: 1.5rem;
+  background: var(--card-bg);
+  border-radius: var(--border-radius);
+  margin-top: var(--spacing-lg);
+}
+
+.now-playing-art {
+  width: 100px;
+  height: 100px;
+  border-radius: 8px;
+}
+
+.player-iframe {
+  width: 100%;
+  height: 80px;
+  border: none;
+  margin-top: 1rem;
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: var(--spacing-md);
+  }
+
+  .tracks-grid {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  }
+
+  .now-playing {
+    grid-template-columns: 1fr;
     text-align: center;
   }
-  
-  .header h1 {
-    font-size: 2.5rem;
-    margin-bottom: 1rem;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
-  }
-  
-  /* Search Section Styles */
-  .search-section {
-    background: white;
-    padding: 2rem;
-    box-shadow: var(--card-shadow);
-    margin-bottom: 2rem;
-  }
-  
-  .search-container {
-    max-width: 600px;
+
+  .now-playing-art {
     margin: 0 auto;
-    display: flex;
-    gap: 0.5rem;
+  }
+}
+/*Add this to your CSS */
+.attribution-card {
+  margin-top: var(--spacing-lg);
+  text-align: center;
+  padding: var(--spacing-md);
+}
+
+.developer-card {
+  background: var(--card-bg);
+  padding: var(--spacing-md);
+  border-radius: var(--border-radius);
+  box-shadow: 0 4px 12px var(--shadow-color);
+  border: 1px solid var(--border-color);
+  transition: var(--transition);
+  max-width: 300px;
+  margin: 0 auto;
+}
+
+.developer-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 16px var(--shadow-color);
+}
+
+.developed-by {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  letter-spacing: 1px;
+  display: block;
+  margin-bottom: var(--spacing-sm);
+}
+
+.developer-name {
+  color: var(--primary-color);
+  margin: 0;
+  font-size: 1.4rem;
+  font-weight: 600;
+}
+
+.accent-line {
+  height: 2px;
+  width: 60px;
+  background: var(--accent-color);
+  margin: var(--spacing-sm) auto;
+  border-radius: 2px;
+}
+
+@media (max-width: 768px) {
+  .developer-card {
+    padding: var(--spacing-sm);
   }
   
-  .search-input {
-    flex: 1;
-    padding: 1rem;
-    border: 2px solid #e0e0e0;
-    border-radius: 8px;
-    font-size: 1rem;
-    transition: border-color 0.3s;
+  .developer-name {
+    font-size: 1.2rem;
   }
-  
-  .search-input:focus {
-    outline: none;
-    border-color: var(--primary-color);
-  }
-  
-  .search-button {
-    padding: 1rem 2rem;
-    background: var(--primary-color);
-    color: white;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: 600;
-    transition: transform 0.2s;
-  }
-  
-  .search-button:hover {
-    transform: translateY(-2px);
-  }
-  
-  /* Category Styles */
-  .categories {
-    display: flex;
-    justify-content: center;
-    gap: 1rem;
-    margin: 2rem 0;
-    flex-wrap: wrap;
-  }
-  
-  .category {
-    padding: 0.75rem 1.5rem;
-    background: white;
-    border: 2px solid #e0e0e0;
-    border-radius: 25px;
-    cursor: pointer;
-    font-weight: 500;
-    transition: all 0.3s;
-  }
-  
-  .category:hover {
-    background: var(--primary-color);
-    color: white;
-    border-color: var(--primary-color);
-  }
-  
-  .category.active {
-    background: var(--primary-color);
-    color: white;
-    border-color: var(--primary-color);
-  }
-  
-  /* Content Section Styles */
-  .section {
-    max-width: 1200px;
-    margin: 2rem auto;
-    padding: 0 1rem;
-  }
-  
-  .section-title {
-    font-size: 1.75rem;
-    color: var(--secondary-color);
-    margin-bottom: 1.5rem;
-    padding-bottom: 0.5rem;
-    border-bottom: 3px solid var(--primary-color);
-  }
-  
-  /* Music Grid Styles */
-  .music-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 2rem;
-    padding: 1rem;
-  }
-  
-  .music-card {
-    background: white;
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: var(--card-shadow);
-    transition: transform 0.3s, box-shadow 0.3s;
-    cursor: pointer;
-  }
-  
-  .music-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-  }
-  
-  .music-card img {
-    width: 100%;
-    aspect-ratio: 1;
-    object-fit: cover;
-  }
-  
-  .music-card-content {
-    padding: 1rem;
-  }
-  
-  .music-card-title {
-    font-weight: 600;
-    margin-bottom: 0.5rem;
-    color: var(--secondary-color);
-  }
-  
-  .music-card-artist {
-    font-size: 0.9rem;
-    color: #666;
-  }
-  
-  /* Audio Player Styles */
-  .audio-player {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background: white;
-    padding: 1rem;
-    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
-    z-index: 1000;
-    display: none;
-  }
-  
-  .audio-player.active {
-    display: block;
-  }
-  
-  .player-content {
-    max-width: 800px;
-    margin: 0 auto;
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-  }
-  
-  .now-playing {
-    flex: 1;
-    font-weight: 500;
-  }
-  
-  audio {
-    flex: 2;
-  }
-  
-  /* Responsive Design */
-  @media (max-width: 768px) {
-    .header h1 {
-      font-size: 2rem;
-    }
-  
-    .search-container {
-      flex-direction: column;
-    }
-  
-    .search-button {
-      width: 100%;
-    }
-  
-    .music-grid {
-      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-      gap: 1rem;
-    }
-  
-    .player-content {
-      flex-direction: column;
-      text-align: center;
-    }
-  }
+}
